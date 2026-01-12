@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Create New Post • ExcelR Blog</title>
+
+    <!-- Modern font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Latest CKEditor 5 (as of early 2026) -->
+    <script src="https://cdn.ckeditor.com/ckeditor5/43.0.0/classic/ckeditor.js"></script>
+
+    <style>
+        :root {
+            --bg: #f8f9ff;
+            --card-bg: #ffffff;
+            --text: #1e293b;
+            --text-muted: #64748b;
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --border: #e2e8f0;
+            --shadow: 0 10px 40px -12px rgba(0,0,0,0.12);
+            --radius: 16px;
+        }
+
+        [data-theme="dark"] {
+            --bg: #0f0f17;
+            --card-bg: #171725;
+            --text: #e2e8f0;
+            --text-muted: #94a3b8;
+            --border: #2d2d44;
+            --shadow: 0 10px 40px -12px rgba(0,0,0,0.6);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            padding: 2rem 1rem;
+            transition: background 0.4s, color 0.4s;
+        }
+
+        .create-container {
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow);
+            padding: 2.5rem 2.5rem;
+            width: 100%;
+            max-width: 900px;
+            margin: 0 auto 3rem;
+        }
+
+        h1 {
+            font-size: 2.2rem;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 2.2rem;
+            letter-spacing: -0.02em;
+        }
+
+        .form-group {
+            margin-bottom: 1.8rem;
+        }
+
+        label {
+            display: block;
+            font-size: 0.98rem;
+            font-weight: 600;
+            margin-bottom: 0.6rem;
+            color: var(--text);
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 0.9rem 1.1rem;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            font-size: 1rem;
+            background: var(--bg);
+            color: var(--text);
+            transition: all 0.2s ease;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.15);
+        }
+
+        /* CKEditor Styling */
+        .ck-editor__editable_inline {
+            min-height: 420px;
+            border: 1px solid var(--border) !important;
+            border-radius: 10px !important;
+            background: var(--bg) !important;
+            color: var(--text) !important;
+            padding: 1.2rem !important;
+            font-size: 1.05rem !important;
+            line-height: 1.7 !important;
+        }
+
+        .ck-editor__editable_inline:focus {
+            border-color: var(--primary) !important;
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.15) !important;
+        }
+
+        .ck.ck-toolbar {
+            border-radius: 10px 10px 0 0 !important;
+            border: 1px solid var(--border) !important;
+            border-bottom: none !important;
+            background: rgba(99,102,241,0.04) !important;
+        }
+
+        .btn-primary {
+            width: 100%;
+            padding: 1rem;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 1.5rem;
+            transition: all 0.25s ease;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px -10px rgba(99,102,241,0.4);
+        }
+
+        .back-link {
+            text-align: center;
+            margin-top: 2rem;
+            font-size: 1rem;
+        }
+
+        .back-link a {
+            color: var(--primary);
+            font-weight: 500;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .back-link a:hover {
+            color: var(--primary-dark);
+            text-decoration: underline;
+        }
+
+        @media (max-width: 768px) {
+            .create-container {
+                padding: 2rem 1.5rem;
+            }
+            h1 {
+                font-size: 1.9rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="create-container">
+        <h1>Create New Post</h1>
+
+        <form th:action="@{/create}" th:object="${post}" method="post" id="createPostForm">
+            <div class="form-group">
+                <label for="title">Post Title</label>
+                <input type="text" id="title" th:field="*{title}" placeholder="Enter an engaging title..." required />
+            </div>
+
+            <div class="form-group">
+                <label for="description">Short Description</label>
+                <input type="text" id="description" th:field="*{description}" 
+                       placeholder="Brief summary (shown in previews, max 160 chars)" maxlength="160" required />
+            </div>
+
+            <div class="form-group">
+                <label for="content">Main Content</label>
+                <textarea id="content" th:field="*{content}" placeholder="Write your amazing post here..."></textarea>
+            </div>
+
+            <button type="submit" class="btn-primary">Publish Post</button>
+        </form>
+
+        <div class="back-link">
+            <a th:href="@{/dashboard}">← Back to Dashboard</a>
+        </div>
+    </div>
+
+    <script>
+        let editorInstance;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            ClassicEditor
+                .create(document.querySelector('#content'), {
+                    toolbar: [
+                        'heading', '|',
+                        'bold', 'italic', 'link', 'bulletedList', 'numberedList', '|',
+                        'outdent', 'indent', '|',
+                        'blockQuote', 'codeBlock', 'imageUpload', '|',
+                        'undo', 'redo'
+                    ],
+                    placeholder: "Start writing your post... (you can add images, code blocks, quotes, etc.)",
+                    height: 460
+                })
+                .then(editor => {
+                    editorInstance = editor;
+                })
+                .catch(error => {
+                    console.error("CKEditor failed to initialize:", error);
+                });
+
+            // Client-side validation before submit
+            document.getElementById('createPostForm').addEventListener('submit', function (e) {
+                if (editorInstance) {
+                    const contentData = editorInstance.getData().trim();
+                    if (!contentData) {
+                        alert("Please add some content to your post.");
+                        e.preventDefault();
+                        return;
+                    }
+                    document.querySelector('#content').value = contentData;
+                }
+            });
+        });
+    </script>
+</body>
+</html>
